@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<title>Client do WiPlayer - Tocará as músicas</title>
+</head>
+<body>
+</body>
+<script src="socket.io/socket.io.js"></script>
+<script type="text/javascript">	
+	var host = '192.168.0.107:3500/'
+	var socket = io();
+	$(document).ready(function() {
+		console.log('AUDIO SENDO CRIADO ! ')
+		var audioElement = document.createElement('audio');
+		audioElement.setAttribute('type', "audio/mpeg");
+
+
+		socket.on('playMusic' , function (data) {
+			if(audioElement.currentTime == 0) {
+				console.log('music will play' ,host+data);
+				audioElement.setAttribute('src', 	data);
+			}
+			audioElement.play().catch(function() {
+				console.log("hellow word")
+			});		
+		});
+
+		socket.on('pauseMusic' , function () {
+			audioElement.pause()
+		})
+
+		
+
+
+
+		
+		$('#restart').click(function() {
+			audioElement.currentTime = 0;
+		});
+	});
+</script>
+</html>

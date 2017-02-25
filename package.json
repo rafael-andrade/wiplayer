@@ -1,0 +1,23 @@
+{
+  "name": "wiplayer",
+  "version": "1.0.0",
+  "description": "A simple music player over wifi",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rafael-andrade/wiplayer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rafael-andrade/wiplayer/issues"
+  },
+  "homepage": "https://github.com/rafael-andrade/wiplayer#readme",
+  "dependencies": {
+    "express": "^4.14.1",
+    "socket.io": "^1.7.3"
+  }
+}

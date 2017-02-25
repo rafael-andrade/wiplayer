@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<title>Controle do WiPlayer - Tocará as músicas</title>
+</head>
+<body>
+	<button id="play">Play</button>
+	<button id="pause">Pause</button>
+</body>
+<script src="socket.io/socket.io.js"></script>
+<script type="text/javascript">	
+	var socket = io();
+	$('#play').click(function() {
+		console.log('play clicked')
+		socket.emit('playOnClick' , 'myway.mp3')
+	});
+
+	$('#pause').click(function () {
+		console.log('pausing music')
+		socket.emit('pauseOnClick')
+	})
+
+
+</script>
+</html>
