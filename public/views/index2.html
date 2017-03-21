@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<head>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/vue.resource/1.2.1/vue-resource.min.js"></script>
+	<title>Controle do WiPlayer - Tocará as músicas</title>
+</head>
+
+<body>
+	<div id='app'>
+		<span v-for='song in songs'>
+			{{song.title}}
+		</span>
+	
+	</div>
+</body>
+
+<script type="text/javascript">
+	var app = new Vue({
+
+		el: '#app',
+		data: {
+			songs: [
+			{
+				id: 1,
+				title: 'Highway to Hell',
+				author: 'ACDC',
+				duration: 284,
+				genre: 'Rock',
+				src: 'highway.mp3'
+			},
+			{
+				id: 2,
+				title: 'Ordinary Love',
+				author: "U2",
+				duration: 218,
+				genre: "Rock",
+				src: "ordinary.mp3"
+			},
+			{
+				id: 3,
+				title: "Make War",
+				author: "From First to Last",
+				duration: 203,
+				genre: "Rock",
+				src: "makewar.mp3"
+			},
+			{
+				id: 4,
+				title: "Eu sei de cor",
+				author: "Marialia Mendonca",
+				duration: 189,
+				genre: "Sertanejo",
+				src: "seidecor.mp3"
+			}]
+		}
+	})
+
+	
+
+
+</script>
+</html>

@@ -18,6 +18,8 @@
   "homepage": "https://github.com/rafael-andrade/wiplayer#readme",
   "dependencies": {
     "express": "^4.14.1",
-    "socket.io": "^1.7.3"
+    "socket.io": "^1.7.3",
+    "vue": "^2.2.4",
+    "vue-resource": "^1.2.1"
   }
 }

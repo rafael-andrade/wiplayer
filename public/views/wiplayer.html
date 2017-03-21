@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<link rel="stylesheet" type="text/css" href="public/views/CSS/style.css">
+	<title>Controle do WiPlayer - Tocará as músicas</title>
+</head>
+
+<body>
+	<div id='app'>
+		<div style="width: 100%; overflow: hidden;">
+
+
+
+			<div style="width: 70%; float: left;">
+				<h1> SONGS </h1>
+				<table>
+					<tr> 
+						<td>SONG</td>
+						<td>ARTIST</td>
+						<td>DURATION</td>
+						<td>GENRE</td>
+					</tr>
+					<tr v-for='song in songs'>
+						<td class="songName"><a v-on:click="playSong(song.id)">{{song.title}}</a></td> 
+						<td>{{song.author}}</td>
+						<td>{{toMinutes(song.duration)}}</td>
+						<td>{{song.genre}}</td>
+					</tr>
+				</table>
+			</div>
+
+			<div style="margin-left: 72%;"> 
+				<div class="receptors">
+					<h1> Receptors <h1>
+						<span v-for="receptor in receptors">
+							<input type="checkbox" id="receptor.id" v-bind:value='receptor.id' v-model="receptorsToPlay">
+							<label for="receptor.id">{{receptor.name}}</label>
+							<br>
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="footer">
+				<table class="controles">
+					<tr>
+						<td><button v-on:click="pauseOnClick()" v-if="playing == false" class="btn">Play</button>
+							<button v-on:click="pauseOnClick()" v-else class="btn">Pause</button></td>
+							<td><button v-on:click="stopOnClick()" class="btn">Parar</button></td>
+							<td class="volume">Volume: </td>
+							<td><button v-on:click="volumeUp()" class="btn">+</button></td>
+							<td><button v-on:click="volumeDown()" class="btn">-</button></td>
+							<td><button v-on:click="mute()" class="btn">Mute</button></td>
+						</tr>
+					</table>
+				</div>
+
+			</div>
+
+		</body>
+
+		<script src="socket.io/socket.io.js"></script>
+
+		<script type="text/javascript">
+			var apiURL = '192.168.0.110:3500/musicas'
+			var socket = io();
+
+			var musicas = [ ]
+			var app = new Vue({
+
+				el: '#app',
+				data: {
+					playing:false,
+					receptorsToPlay:[],
+					receptors: [],
+					songs: [],
+					playlists: []
+				},
+				created: function () {
+					this.fetchData();
+				},
+				methods: {
+					fetchData: function () {
+						var that = this;
+						console.log('Pedindo musicas')
+						socket.emit('getAllSongs')
+						socket.on('allSongs',function(data) {
+							console.log(data)
+							that.songs = data
+						});
+
+					},
+					playSong: function(id) {
+						this.playing = true
+						socket.emit('playOnClick', {musicID: id, receptors: this.receptorsToPlay})
+
+					},
+					pauseOnClick: function () {
+						console.log('Botão pausar')
+						if(this.playing == true) {
+							this.playing = false
+						} else {
+							this.playing = true
+						}
+						socket.emit('pauseOnClick')
+
+					},
+					stopOnClick: function() {
+						console.log('Botão parar')
+						this.playing = false
+						socket.emit('stopOnClick')
+
+					},
+					volumeUp: function() {
+						socket.emit('volumeUp')
+					},
+					volumeDown: function() {
+						socket.emit('volumeDown')
+					},
+					mute: function() {
+						socket.emit('mute')
+					},
+					toMinutes: function(time){
+						var minutes = Math.floor( time / 60 )
+						var seconds = time - (minutes * 60)
+						if (seconds < 10)
+							return  minutes + ':0' + seconds
+						else 
+							return minutes + ':' + seconds
+					}
+
+
+				}
+			})
+
+			socket.on('newReceptor', function(data) {
+				var receptor = prompt("Um novo receptor foi conectado, digite um nome pra ele:", "Nome do Receptor");
+				console.log(receptor)
+				if (receptor != null) {
+					console.log({id: data, name: receptor})
+					socket.emit('registerReceptor', {id: data, name: receptor})
+					app.$data.receptors.push({id: data, name: receptor})
+				}
+			})
+
+			socket.on('deleteReceptor' , function(data) {
+				console.log('Deleting in vue')
+				var deleted = app.$data.receptors.indexOf(data)
+				app.$data.receptors.splice(deleted, 1)
+			})
+
+
+
+
+		</script>
+
+		</html>

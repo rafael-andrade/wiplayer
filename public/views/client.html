@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="public/views/CSS/style.css">
+	<title>Client do WiPlayer - Tocará as músicas</title>
+</head>
+<body>
+	<div>
+		<h1 class="client"> Now Playing </h1>
+		<p class="centered"></p>
+		
+	</div>
+</body>
+<script src="socket.io/socket.io.js"></script>
+<script type="text/javascript">	
+	var host = 'localhost:3500/'
+	var socket = io();
+	var musicPlaying
+	socket.on('connect', function() {
+		socket.emit('receptorOpen', socket.id)
+	})
+	console.log(socket.id)
+	var volume = 0
+	$(document).ready(function() {
+		console.log('AUDIO SENDO CRIADO ! ')
+		var audioElement = document.createElement('audio');
+		audioElement.setAttribute('type', "audio/mpeg");
+
+		socket.on('pauseSong' , function () {
+			if (!audioElement.paused) {
+				audioElement.pause()
+			} else {
+				audioElement.play()
+			}
+		});
+
+		socket.on('stopSong' , function() {
+			audioElement.pause()
+			audioElement.currentTime = 0
+		});
+
+		socket.on('volumeUpSong', function() {
+			audioElement.volume += 0.1
+		});
+
+		socket.on('volumeDownSong', function() {
+			audioElement.volume -= 0.1
+		});
+
+		socket.on('muteSong', function() {
+			if(audioElement.volume == 0) {
+				audioElement.volume = volume
+			} else {
+				volume = audioElement.volume
+				audioElement.volume = 0
+			}
+		});
+
+		audioElement.onended = function() {
+			console.log('Musica acabou')
+			socket.emit('playNext', musicPlaying)
+		}
+
+		socket.on('playMusic' , function (data) {
+			musicPlaying = data
+			$("p").html('Song:'+data.title+ '  <br/>Artist:' + data.author)
+			console.log('Tocando musica', data.title)
+			audioElement.setAttribute('src',data.src);
+			audioElement.play().catch(function() {
+				console.log("hellow word")
+			});		
+		});
+
+
+	});
+</script>
+</html>
