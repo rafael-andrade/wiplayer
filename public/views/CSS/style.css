@@ -10,6 +10,19 @@ h1{
   text-align: center;
   margin-bottom: 15px;
 }
+h2{
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 150;
+  text-align: center;
+  font-size:30px;
+}
+
+.imagecentered {
+    width: 230px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto }
 
 p {
   color: #fff;
@@ -60,12 +73,18 @@ td{
 ol {
   padding-left:40%;
 }
-
+a {
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 150;
+  text-align: center;
+  font-size:30px
+}
 
 a:hover{
 
   cursor: pointer;
-  font-size: 21px;
+  font-size: 33px;
 }
 .text-centered{
   text-align: center;
@@ -83,8 +102,8 @@ a:hover{
 
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,500,300,700);
 body{
-  background: -webkit-linear-gradient(left, #25c481, #25b7c4);
-  background: linear-gradient(to right, #25c481, #25b7c4);
+  background: -webkit-linear-gradient(left, #25b7c4, #25b8c2);
+  background: linear-gradient(to right, #25b8c2, #25c481);
   font-family: 'Roboto', sans-serif;
 }
 section{
@@ -121,6 +140,8 @@ section{
   text-align: center;
   padding-left: 32%;
 }
+
+
 .footer {
   text-align: center;
   border-top: solid 3px rgba(255,255,255,0.3);
@@ -157,14 +178,31 @@ section{
   background: #25b7c4;
   display:block;
   height: 52px;
-  width: 52px;
   border-radius: 50%;
   border: 2px solid white;
   
 }
 
+.btn.rounded {  
+  width: 52px;
+}
+
 .btn:hover{
   background: white;
   color:#25b7c4;
+}
+
+#nav {
+  background-color: #C08374;
+  border: 1px solid #A76358;
+  text-align: center;
+}
+ul {
+  list-style: none;
+  margin-top: 10%;
+  margin-left: 40%;
+}
+ul li {
+  margin: 70px 20px;
 }
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+	<link rel="stylesheet" type="text/css" href="public/views/CSS/style.css">
+	<title>Home Theater - Wiplayer</title>
+</head>
+<body>
+	<div id="app">
+		<div class="header">
+			<a href="/" class='btn rounded'> Voltar </a>
+			<img src="public/views/CSS/images/wiplayer.png" alt="Logo" class="imagecentered">
+		</div>
+		<video id="video1" height="600px" controls>
+			<source src="/public/transformers/transformer.mp4" type="video/mp4">
+		</video>
+		<div class="footer">
+			<table class="controles">
+				<tr>
+					<td><button onclick="playVideo()" class='btn rounded'>Play</button></td>
+					<td><button onclick="stopVideo()" class='btn rounded'>Stop</button></td>
+				</tr>
+			</table>
+		</div>			
+	</div>
+</body>
+	<script src="socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+		//Socket é criado
+		var socket = io();
+
+
+		var myVideo = document.getElementById("video1")
+
+		//Função que toca o vídeo e toca todos os receptores
+		function playVideo() {
+			myVideo.play()
+			socket.emit('playVideo')
+			console.log('Clickei o play')
+		}
+
+		//Função que pausa o vídeo e os receptores
+		function stopVideo() {
+			myVideo.pause()
+			myVideo.currentTime = 0
+			socket.emit('stopOnClick')
+		}
+
+		//Mesma função do wiplayer, registrar o receptor
+		socket.on('newReceptor', function(data) {
+			var receptor = prompt("Um novo receptor foi conectado, digite um nome pra ele:", "Nome do Receptor");
+			console.log(receptor)
+			if (receptor != null) {
+				console.log({id: data, name: receptor})
+				socket.emit('registerReceptor', {id: data, name: receptor})
+			}
+		})
+
+
+
+
+
+	</script>
+
+
+	</html>

@@ -8,6 +8,10 @@
 
 <body>
 	<div id='app'>
+		<div class="header">
+			<a href="/" class='btn rounded'> Voltar </a>
+			<img src="public/views/CSS/images/wiplayer.png" alt="Logo" class="imagecentered">
+		</div>
 		<div style="width: 100%; overflow: hidden;">
 
 
@@ -32,126 +36,177 @@
 
 			<div style="margin-left: 72%;"> 
 				<div class="receptors">
-					<h1> Receptors <h1>
-						<span v-for="receptor in receptors">
-							<input type="checkbox" id="receptor.id" v-bind:value='receptor.id' v-model="receptorsToPlay">
-							<label for="receptor.id">{{receptor.name}}</label>
-							<br>
-						</span>
-					</div>
+					<h1> Receptors </h1>
+					<span v-for="receptor in receptors">
+						<input type="checkbox" id="receptor.id" v-bind:value='receptor.id' v-model="receptorsToPlay">
+						<label for="receptor.id">{{receptor.name}}</label>
+						<br>
+					</span>
+				</div>
+				<div class="junctions" style="visibility: hidden;">
+					<input type="text" v-model="name"  style="margin-left: 15%">
+					<button v-on:click="createJunction(receptorsToPlay)">Create Junction</button>
+					<br>
+					<h1>Junctions</h1>
+					<span v-for="junction in junctions">
+						<input type="checkbox" id="junction.name" v-bind:value='junction.receptors' v-model="junctionSelected">
+						<label for="junction.name">{{junction.name}}</label>
+						<br>
+					</span>
+					
 				</div>
 			</div>
-			<div class="footer">
-				<table class="controles">
-					<tr>
-						<td><button v-on:click="pauseOnClick()" v-if="playing == false" class="btn">Play</button>
-							<button v-on:click="pauseOnClick()" v-else class="btn">Pause</button></td>
-							<td><button v-on:click="stopOnClick()" class="btn">Parar</button></td>
-							<td class="volume">Volume: </td>
-							<td><button v-on:click="volumeUp()" class="btn">+</button></td>
-							<td><button v-on:click="volumeDown()" class="btn">-</button></td>
-							<td><button v-on:click="mute()" class="btn">Mute</button></td>
-						</tr>
-					</table>
-				</div>
+		</div>
+		<div class="footer">
+			<table class="controles">
+				<tr>
+					<td><button v-on:click="pauseOnClick()" class="btn">Play/Pause</button></td>
+					<td><button v-on:click="stopOnClick()" class="btn rounded">Stop</button></td>
+					<td class="volume">Volume: </td>
+					<td><button v-on:click="volumeUp()" class="btn rounded">+</button></td>
+					<td><button v-on:click="volumeDown()" class="btn rounded">-</button></td>
+					<td><button v-on:click="mute()" class="btn rounded">Mute</button></td>
+				</tr>
+			</table>
+		</div>
 
-			</div>
+	</div>
 
-		</body>
+</body>
 
-		<script src="socket.io/socket.io.js"></script>
+<script src="socket.io/socket.io.js"></script>
 
-		<script type="text/javascript">
-			var apiURL = '192.168.0.110:3500/musicas'
-			var socket = io();
+<script type="text/javascript">
+	//Criando um novo socket
+	var socket = io();
 
-			var musicas = [ ]
-			var app = new Vue({
+	//Iniciando a aplicação vue
+	var app = new Vue({
 
-				el: '#app',
-				data: {
-					playing:false,
-					receptorsToPlay:[],
-					receptors: [],
-					songs: [],
-					playlists: []
-				},
-				created: function () {
-					this.fetchData();
-				},
-				methods: {
-					fetchData: function () {
-						var that = this;
-						console.log('Pedindo musicas')
-						socket.emit('getAllSongs')
-						socket.on('allSongs',function(data) {
-							console.log(data)
-							that.songs = data
-						});
+		el: '#app',
+		data: {
+			playing:false,
+			//receptorToPlay: JSON com ID dos receptores que estão selecionados para tocar
+			receptorsToPlay:[],
+			//junctionSelected: JSON com as junções selecionadas para tocar
+			junctionSelected:[],
+			//receptores: JSON com os receptores conectados { id, name }
+			receptors: [],
+			//songs: JSON com os dados das músicas {id, title, author, duration, genre, src}
+			songs: [],
+			//junctions: JSON com junções {name, receptores}
+			junctions: [],
+			//variável para pegar o nome da junção
+			name: '',
+		},
+		//função que inicia junto com a aplicação
+		created: function () {
+			this.fetchData();
+		},
+		methods: {
+			//Ao criar a aplicação ele preenche o vetor songs com todas as músicas
+			fetchData: function () {
+				var that = this;
+				console.log('Pedindo musicas')
+				socket.emit('getAllSongs')
+				socket.on('allSongs',function(data) {
+					console.log(data)
+					that.songs = data
+				});
 
-					},
-					playSong: function(id) {
-						this.playing = true
-						socket.emit('playOnClick', {musicID: id, receptors: this.receptorsToPlay})
+			},
+			//Envia pro servidor a música selecionada pra tocar nos receptores
+			playSong: function(id) {
+				this.playing = true
+				socket.emit('playOnClick', {musicID: id, receptors: this.receptorsToPlay, junctions: this.junctionSelected})
 
-					},
-					pauseOnClick: function () {
-						console.log('Botão pausar')
-						if(this.playing == true) {
-							this.playing = false
-						} else {
-							this.playing = true
-						}
-						socket.emit('pauseOnClick')
+			},
+			//Quando o botão Play/Pausar é clicado ele envia uma requisição pro servidor pausar/tocar os receptores
+			//Pausa receptores tocando e toca receptores pausados
 
-					},
-					stopOnClick: function() {
-						console.log('Botão parar')
-						this.playing = false
-						socket.emit('stopOnClick')
-
-					},
-					volumeUp: function() {
-						socket.emit('volumeUp')
-					},
-					volumeDown: function() {
-						socket.emit('volumeDown')
-					},
-					mute: function() {
-						socket.emit('mute')
-					},
-					toMinutes: function(time){
-						var minutes = Math.floor( time / 60 )
-						var seconds = time - (minutes * 60)
-						if (seconds < 10)
-							return  minutes + ':0' + seconds
-						else 
-							return minutes + ':' + seconds
-					}
-
-
+			//Caso algum receptor seja selecionado ele irá aplicar essa função a apenas aqueles receptores
+			pauseOnClick: function () {
+				console.log('Botão pausar')
+				if(this.playing == true) {
+					this.playing = false
+				} else {
+					this.playing = true
 				}
-			})
+				socket.emit('pauseOnClick', this.receptorsToPlay)
 
-			socket.on('newReceptor', function(data) {
-				var receptor = prompt("Um novo receptor foi conectado, digite um nome pra ele:", "Nome do Receptor");
-				console.log(receptor)
-				if (receptor != null) {
-					console.log({id: data, name: receptor})
-					socket.emit('registerReceptor', {id: data, name: receptor})
-					app.$data.receptors.push({id: data, name: receptor})
-				}
-			})
+			},
 
-			socket.on('deleteReceptor' , function(data) {
-				console.log('Deleting in vue')
-				var deleted = app.$data.receptors.indexOf(data)
-				app.$data.receptors.splice(deleted, 1)
-			})
+			//Quando o stop é clicado ele para todos os receptores
+			stopOnClick: function() {
+				console.log('Botão parar')
+				this.playing = false
+				socket.emit('stopOnClick')
+
+			},
+
+			//Aumenta o volume 
+			volumeUp: function() {
+				socket.emit('volumeUp')
+			},
+
+			//Diminui o volume
+			volumeDown: function() {
+				socket.emit('volumeDown')
+			},
+
+			//Muta o volume
+			mute: function() {
+				socket.emit('mute')
+			},
+			//Função que converte segundos para minutos/segundos
+			toMinutes: function(time){
+				var minutes = Math.floor( time / 60 )
+				var seconds = time - (minutes * 60)
+				if (seconds < 10)
+					return  minutes + ':0' + seconds
+				else 
+					return minutes + ':' + seconds
+			}, 
+
+			//Cria junção, não está funcionando como deveria
+			createJunction: function(receptors) {
+				this.junctions.push({name: this.name, receptors: this.receptorsToPlay})
+				console.log('nome:', this.name)
+				console.log('receptors' , this.receptorsToPlay)
+				console.log('Juncoes', this.junctions)
+			}
+
+
+		}
+	})
+
+	/*
+	Ao conectar um receptor, ele precisa ser registrador com um nome e ser adicionado no vue.js
+	Um alert aparece para digitar o nome do receptor PS:precisa ser melhorado
+	*/
+
+	socket.on('newReceptor', function(data) {
+		var receptor = prompt("Um novo receptor foi conectado, digite um nome pra ele:", "Nome do Receptor");
+		console.log(receptor)
+		if (receptor != null) {
+			console.log({id: data, name: receptor})
+			socket.emit('registerReceptor', {id: data, name: receptor})
+			app.$data.receptors.push({id: data, name: receptor})
+		}
+	})
+
+	/*
+	Ao desconectar um receptor essa função é acionada para deletar o receptor da lista de receptores
+	*/
+	socket.on('deleteReceptor' , function(data) {
+		console.log('Deleting in vue')
+		var deleted = app.$data.receptors.indexOf(data)
+		app.$data.receptors.splice(deleted, 1)
+	})
 
 
 
 
-		</script>
+</script>
 
-		</html>
+</html>

@@ -5,27 +5,40 @@
 	<title>Client do WiPlayer - Tocará as músicas</title>
 </head>
 <body>
+	<div class="header">
+		<img src="public/views/CSS/images/wiplayer.png" alt="Logo" class="imagecentered">
+	</div>
 	<div>
 		<h1 class="client"> Now Playing </h1>
 		<p class="centered"></p>
 		
+		
 	</div>
+	<h2></h2>
 </body>
 <script src="socket.io/socket.io.js"></script>
 <script type="text/javascript">	
-	var host = 'localhost:3500/'
+	//Cria um socket
 	var socket = io();
 	var musicPlaying
+
+	//Ao conectar ele precisa ser registrado pelo controlador
 	socket.on('connect', function() {
 		socket.emit('receptorOpen', socket.id)
 	})
-	console.log(socket.id)
+
+	//Cria uma variável volume pra poder gravar o volume quando o som fica mutado
 	var volume = 0
 	$(document).ready(function() {
-		console.log('AUDIO SENDO CRIADO ! ')
 		var audioElement = document.createElement('audio');
 		audioElement.setAttribute('type', "audio/mpeg");
 
+		
+
+		/*
+		Ao receber a requisição pauseSong ele verificará se já está pausado
+		se sim, dá o play, se não pausa
+		*/
 		socket.on('pauseSong' , function () {
 			if (!audioElement.paused) {
 				audioElement.pause()
@@ -34,19 +47,32 @@
 			}
 		});
 
+		/*
+		Ao receber a requisição stopSong ele setará o tempo da música atual como 0
+		e pausará
+		*/
 		socket.on('stopSong' , function() {
 			audioElement.pause()
 			audioElement.currentTime = 0
 		});
 
+		/*
+		Aumenta o volume em 0.1
+		*/
 		socket.on('volumeUpSong', function() {
 			audioElement.volume += 0.1
 		});
 
+		/*
+		Diminui o volume
+		*/
 		socket.on('volumeDownSong', function() {
 			audioElement.volume -= 0.1
 		});
 
+		/*
+		Muta a música e seta o volume como o volume atual
+		Ao desmutar ele recuperará o volume anterior*/
 		socket.on('muteSong', function() {
 			if(audioElement.volume == 0) {
 				audioElement.volume = volume
@@ -56,9 +82,23 @@
 			}
 		});
 
+		/*
+		Quando a música acabar ela tocará a próxima da playlist
+		*/
 		audioElement.onended = function() {
 			console.log('Musica acabou')
 			socket.emit('playNext', musicPlaying)
+		}
+
+		/*
+		Receptor pega os dados da música
+		muda o atributo SRC e dá o play
+
+		Muda também os dados da música na tela
+		*/
+
+		audioElement.ontimeupdate = function() {
+			$("h2").html('Time:' + toMinutes(audioElement.currentTime))
 		}
 
 		socket.on('playMusic' , function (data) {
@@ -70,6 +110,14 @@
 				console.log("hellow word")
 			});		
 		});
+		function toMinutes(time) {
+			var minutes = Math.floor( time / 60 )
+			var seconds = Math.floor(time - (minutes * 60))
+			if (seconds < 10)
+				return  minutes + ':0' + seconds
+			else 
+				return minutes + ':' + seconds
+		}
 
 
 	});
