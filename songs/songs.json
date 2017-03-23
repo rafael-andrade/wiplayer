@@ -1,34 +1,34 @@
 [
 	{
-		"id": "1",
-		"title": "Highway to Hell",
-		"author": "ACDC",
-		"duration": "284",
-		"genre": "Rock",
-		"src": "highway.mp3"
+		id: 1,
+		title: "Highway to Hell",
+		author: "ACDC",
+		duration: 284,
+		genre: "Rock",
+		src: "/songs/highway.mp3"
 	},
 	{
-		"id": "2",
-		"title": "Ordinary Love",
-		"author": "U2",
-		"duration": "218",
-		"genre": "Rock",
-		"src": "ordinary.mp3"
+		id: 2,
+		title: "Ordinary Love",
+		author: "U2",
+		duration: 218,
+		genre: "Rock",
+		src: "/songs/ordinary.mp3"
 	},
 	{
-		"id": "3",
-		"title": "Make War",
-		"author": "From First to Last",
-		"duration": "203",
-		"genre": "Rock",
-		"src": "makewar.mp3"
+		id: 3,
+		title: "Make War",
+		author: "From First to Last",
+		duration: 203,
+		genre: "Rock",
+		src: "/songs/makewar.mp3"
 	},
 	{
-		"id": "4",
-		"title": "Eu sei de cor",
-		"author": "Marialia Mendonca",
-		"duration": "189",
-		"genre": "Sertanejo",
-		"src": "seidecor.mp3"
+		id: 4,
+		title: "Eu sei de cor",
+		author: "Marialia Mendonca",
+		duration: 189,
+		genre: "Sertanejo",
+		src: "songs/seidecor.mp3"
 	}
 ]
