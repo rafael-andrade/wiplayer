@@ -1,7 +1,7 @@
 # WiPlayer
 A simple music player using internet
 
-#How does it work? 
+# How does it work? 
 You can play the same music in multiple devices connected. 
 You can choose which device will play each music.
 
