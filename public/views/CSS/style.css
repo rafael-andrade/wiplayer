@@ -77,14 +77,14 @@ a {
   color: #fff;
   text-transform: uppercase;
   font-weight: 150;
+  height: 30px;
   text-align: center;
-  font-size:30px
 }
 
 a:hover{
 
   cursor: pointer;
-  font-size: 33px;
+  font-size: 21px;
 }
 .text-centered{
   text-align: center;
