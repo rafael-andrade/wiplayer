@@ -96,7 +96,6 @@ io.on('connection', function (socket) {
 				}
 			}*/
 		} else {
-
 			io.emit('playMusic',songs[(data.musicID)-1])
 		}
 	});
@@ -158,8 +157,23 @@ io.on('connection', function (socket) {
 
 	//O controlador dará um nome pro novo receptor e retornará pro serve.js adicionar na lista de receptores
 	socket.on('registerReceptor' , function(data) {
+		console.log(data);
 		console.log('Registrando receptor ' +data.id + ' com nome ' + data.name)
 		receptors.push(data)
+	})
+
+	socket.on('getAllReceptors', function(data) {
+		socket.emit('receptors', receptors)
+	})
+
+	socket.on('renameReceptor', function(data) {
+		console.log('Renomeando para ' + data.name)
+		for (var i = 0; i < receptors.length; i++) {
+			if (receptors[i].id === data.id) {
+				console.log ('Renomeei' + receptors[i].name + ' para ' + data.name)
+				receptors[i].name = data.name
+			}
+		}
 	})
 
 	//Toca proxima música
